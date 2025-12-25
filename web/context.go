@@ -15,6 +15,8 @@ type Context struct {
 	//所有函数都被执行
 	index    int
 	handlers []HandleFunc
+	//封装的动态路由储存的信息
+	param map[string]string
 }
 
 // HandleFunc 定义业务逻辑

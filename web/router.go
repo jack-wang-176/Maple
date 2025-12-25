@@ -17,6 +17,8 @@ type node struct {
 	children map[string]*node
 	//实现多个业务函数的输入
 	handler []HandleFunc
+	//添加动态路由匹配
+	paramChild *node
 }
 
 func NewRoute() *Route {
@@ -115,6 +117,7 @@ func (r *Route) findRoute(path string, method string) (*node, bool) {
 	//因为进行到这一步说明对应的树一定存在
 	//现在就是循环递归seg的步骤
 	for _, seg := range segS {
+
 		child, ok := treeRoute.children[seg]
 		if !ok {
 			return nil, false
