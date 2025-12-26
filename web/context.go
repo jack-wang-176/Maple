@@ -19,6 +19,16 @@ type Context struct {
 	param map[string]string
 }
 
+// Param 这里提供了一个简单的快捷方式来去读取出在Context里面储存的
+// 动态匹配内容
+func (ctx *Context) Param(key string) (string, error) {
+	s, ok := ctx.param[key]
+	if !ok {
+		return "", errors.New("获取参数路径失败")
+	}
+	return s, nil
+}
+
 // HandleFunc 定义业务逻辑
 type HandleFunc func(ctx *Context)
 
@@ -29,11 +39,13 @@ func (ctx *Context) JsonResp(val any) error {
 	if err != nil {
 		return errors.New("输入数据无法转化为json格式")
 	}
+	//这里要设置header告诉浏览器数据类型
+	//必须要先写入header再进行数据的发送
+	ctx.Resp.Header().Set("Content-Type", "application/json; charset=utf-8")
 	//这里是运用封装的response_writer方法将marshal返回
 	//int是写入的输入字节数
 	write, err := ctx.Resp.Write(marshal)
-	//这里要设置header告诉浏览器数据类型
-	ctx.Resp.Header().Set("Content-Type", "application/json; charset=utf-8")
+
 	if err != nil {
 		return err
 	}

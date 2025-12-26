@@ -46,10 +46,10 @@ func (httpService *HttpService) ServeHTTP(w http.ResponseWriter, r *http.Request
 	}
 	//对参数路径进行查询
 	//对实际的业务逻辑进行组装
-	route, ok := httpService.Route.findRoute(r.URL.Path, r.Method)
+	info, ok := httpService.Route.findRoute(r.URL.Path, r.Method)
 	//这里不能世界判断route.handler存在一个空指针保护
 	//必须判定route不是空指针
-	if !ok || route == nil || route.handler == nil {
+	if !ok || info.node == nil || info.node.handler == nil {
 		ctx.Resp.WriteHeader(http.StatusNotFound)
 		_, _ = ctx.Resp.Write([]byte("404 page not found"))
 		return
@@ -57,8 +57,9 @@ func (httpService *HttpService) ServeHTTP(w http.ResponseWriter, r *http.Request
 	//这个函数就是业务逻辑的实现，所以不用管注册，注册是注册的事情
 	//route.handler[](ctx)
 	//将handler封装到context层里
-	ctx.handlers = route.handler
+	ctx.handlers = info.node.handler
 	ctx.index = -1
+	ctx.param = info.Info
 	//业务逻辑的执行被放在了这里
 	ctx.Next()
 }
