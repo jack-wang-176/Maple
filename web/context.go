@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"sync"
 )
 
 // Context 是一个proxy持有原始数据，解决数据传输问题
@@ -17,8 +18,29 @@ type Context struct {
 	handlers []HandleFunc
 	//封装的动态路由储存的信息
 	param map[string]string
+
+	//支持set和get方法
+	Keys map[string]any
+	mu   sync.RWMutex
 }
 type M map[string]any
+
+func (ctx *Context) Set(key string, value any) {
+	ctx.mu.Lock()
+	defer ctx.mu.Unlock()
+	if ctx.Keys == nil {
+		ctx.Keys = make(map[string]any)
+	}
+	ctx.Keys[key] = value
+}
+func (ctx *Context) Get(key string) (any, bool) {
+	ctx.mu.RLock()
+	defer ctx.mu.RUnlock()
+	return func() (any, bool) {
+		value, flag := ctx.Keys[key]
+		return value, flag
+	}()
+}
 
 // Param 这里提供了一个简单的快捷方式来去读取出在Context里面储存的
 // 动态匹配内容
