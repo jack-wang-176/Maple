@@ -71,7 +71,7 @@
 ### 1. 安装
 
 ```bash
-go get [github.com/jack-wang-176/Maple](https://github.com/jack-wang-176/Maple)
+go get github.com/jack-wang-176/Maple
 ```
 
 ### 2. 使用示例

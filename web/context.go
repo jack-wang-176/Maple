@@ -18,6 +18,7 @@ type Context struct {
 	//封装的动态路由储存的信息
 	param map[string]string
 }
+type M map[string]any
 
 // Param 这里提供了一个简单的快捷方式来去读取出在Context里面储存的
 // 动态匹配内容
