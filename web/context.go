@@ -25,6 +25,10 @@ type Context struct {
 }
 type M map[string]any
 
+func (ctx *Context) Query(key string) string {
+	return ctx.Request.URL.Query().Get(key)
+}
+
 func (ctx *Context) Set(key string, value any) {
 	ctx.mu.Lock()
 	defer ctx.mu.Unlock()
