@@ -3,9 +3,12 @@ package web
 import (
 	"encoding/json"
 	"errors"
+	"math"
 	"net/http"
 	"sync"
 )
+
+const abortIndex int = math.MaxInt8 / 2
 
 // Context 是一个proxy持有原始数据，解决数据传输问题
 type Context struct {
@@ -26,6 +29,23 @@ type Context struct {
 	//储存http码
 	status int
 }
+
+// Next 处理多个业务函数应该用next处理
+// 这样的话保证一个业务逻辑正确结束以后正确的业务逻辑可以进行
+func (ctx *Context) Next() {
+	ctx.index++
+	for ctx.index < len(ctx.handlers) {
+		ctx.handlers[ctx.index](ctx)
+		ctx.index++
+	}
+}
+func (ctx *Context) Abort() {
+	ctx.index = abortIndex
+}
+func (ctx *Context) IsAborted() bool {
+	return ctx.index >= abortIndex
+}
+
 type M map[string]any
 
 func (ctx *Context) Query(key string) string {

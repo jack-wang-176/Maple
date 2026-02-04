@@ -28,16 +28,6 @@ func (httpService *HttpService) Group(prefix string) *RouterGroup {
 	return httpService.Route.Group(prefix)
 }
 
-// Next 处理多个业务函数应该用next处理
-// 这样的话保证一个业务逻辑正确结束以后正确的业务逻辑可以进行
-func (ctx *Context) Next() {
-	ctx.index++
-	if ctx.index < len(ctx.handlers) {
-		//执行业务逻辑
-		ctx.handlers[ctx.index](ctx)
-	}
-}
-
 // Use 这里仅仅只是添加
 // 实际起作用我们可以去在新去定义AddRoute方法
 func (g *RouterGroup) Use(handlers ...HandleFunc) {
