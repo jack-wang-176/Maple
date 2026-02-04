@@ -22,6 +22,9 @@ type Context struct {
 	//支持set和get方法
 	Keys map[string]any
 	mu   sync.RWMutex
+
+	//储存http码
+	status int
 }
 type M map[string]any
 
@@ -80,6 +83,12 @@ func (ctx *Context) JsonResp(val any) error {
 		return errors.New("写入数据不等于预期")
 	}
 	return nil
+}
+func (ctx *Context) Json(status int, val any) error {
+	ctx.Resp.Header().Set("Content-Type", "application/json; charset=utf-8")
+	ctx.Resp.WriteHeader(status)
+	encoder := json.NewEncoder(ctx.Resp)
+	return encoder.Encode(val)
 }
 
 // BindJson 将输入的val和json绑定在一块
