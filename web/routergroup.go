@@ -18,14 +18,25 @@ type RouterGroup struct {
 
 func (r *Route) Group(prefix string) *RouterGroup {
 	return &RouterGroup{
-		prefix: prefix,
-		Route:  r,
+		prefix:   prefix,
+		Route:    r,
+		Handlers: make([]HandleFunc, 0),
 	}
 }
 
 // Group 这里可以直接在httpService层面实现对方法的调用
 func (httpService *HttpService) Group(prefix string) *RouterGroup {
 	return httpService.Route.Group(prefix)
+}
+func (g *RouterGroup) Group(next string) *RouterGroup {
+	final := next + g.prefix
+	newHandlers := make([]HandleFunc, len(g.Handlers))
+	copy(newHandlers, g.Handlers)
+	return &RouterGroup{
+		Handlers: newHandlers,
+		Route:    g.Route,
+		prefix:   final,
+	}
 }
 
 // Use 这里仅仅只是添加
