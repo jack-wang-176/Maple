@@ -30,6 +30,21 @@ type Context struct {
 	status int
 }
 
+func (ctx *Context) GetHeader(key string) string {
+	// c.Request.Header.Get() 是标准库方法
+	// 特点：
+	// 1. 大小写不敏感 (Authorization 和 authorization 都能取到)
+	// 2. 如果 Header 不存在，返回空字符串 ""
+	// 3. 如果有多个同名 Header，仅返回第一个
+	return ctx.Request.Header.Get(key)
+}
+
+// SetHeader 设置响应头 (Response Header)
+// 也就是你发给客户端的信息，比如告诉浏览器这是一个 JSON，或者设置跨域 CORS
+func (ctx *Context) SetHeader(key string, value string) {
+	ctx.Resp.Header().Set(key, value)
+}
+
 // Next 处理多个业务函数应该用next处理
 // 这样的话保证一个业务逻辑正确结束以后正确的业务逻辑可以进行
 func (ctx *Context) Next() {
